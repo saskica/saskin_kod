@@ -1,17 +1,4 @@
-/*#include <linux/init.h>
-#include <linux/module.h>
-#include <linux/kernel.h>
-#include <linux/slab.h>
-#include <linux/fs.h>
-#include <linux/errno.h>
-#include <linux/types.h>
-#include <linux/fcntl.h>
-#include <linux/proc_fs.h>
-#include <linux/string.h>
-#include <linux/ioport.h>
-#include <asm/io.h>
-#include <asm/uaccess.h>
-#include <linux/interrupt.h>*/
+
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -173,32 +160,17 @@ typedef enum //dogadjaji koji pokrecu promenu stanja
 	Event_no_obstacle
 } events;
 
-static struct hrtimer gate_timer;
+/*static struct hrtimer gate_timer;
 static ktime_t kt;
 static int time;
-static int stopped = 0;
+static int stopped = 0;*/
 
-states current_state = Closed;
+volatile states current_state = Closed;
 
 static int timer_sec = 5;
 
 module_param(timer_sec, int, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
 MODULE_PARM_DESC(timer_sec, "An integer.");
-
-int door_moved_amount = 0;
-
-/*static enum hrtimer_restart gate_timer_callback(struct hrtimer *param)
-{
-	if(current_state == OPENING)
-	{
-		door_moved_amount++;
-	}
-	if(
-	//door_closed_amount++;
-    hrtimer_forward(&gate_timer, ktime_get(), kt);
-	return HRTIMER_RESTART;
-
-}*/
 
 void automat (events sig) //funkcija automat sa pravilima promena stanja
 {
@@ -252,11 +224,12 @@ void automat (events sig) //funkcija automat sa pravilima promena stanja
 				current_state = Blocked;
 				break;
 			}
-			if (sig == Event_close)
-			{
-				current_state = Closing;
-				break;
-			}
+			if (sig == Event_stop)
+                        {
+                                current_state = Stopped;
+                                break;
+                        }
+
 			/*if (sig == Event_timedout) //ovo doradi
 			{
 				current_state = Opened;
@@ -321,8 +294,6 @@ struct file_operations gpio_driver_fops =
 module_init(gpio_driver_init);
 module_exit(gpio_driver_exit);
 
-/* Global variables of the driver */
-
 /* Major number. */
 int gpio_driver_major;
 
@@ -330,11 +301,10 @@ int gpio_driver_major;
 #define BUF_LEN 80
 char* gpio_driver_buffer;
 
-
 /* Virtual address where the physical GPIO address is mapped */
 void* virt_gpio_base;
-
 static int irq_gpio23 = -1;
+
 /*
  * GetGPFSELReg function
  *  Parameters:
@@ -345,7 +315,6 @@ static int irq_gpio23 = -1;
  *   Based on the passed GPIO pin number, finds the corresponding GPFSELn reg and
  *   returns its offset from GPIO base address.
  */
-
 unsigned int GetGPFSELReg(char pin)
 {
     unsigned int addr;
@@ -423,17 +392,17 @@ void SetInternalPullUpDown(char pin, PUD pull)
        to remove the current Pull-up/down). */
     iowrite32(pull, virt_gpio_base + gppud_offset);
 
-    /* Wait 150 cycles – this provides the required set-up time for the control signal */
+    /* Wait 150 cycles â€“ this provides the required set-up time for the control signal */
 
     /* Write to GPPUDCLK0/1 to clock the control signal into the GPIO pads you wish to
-       modify – NOTE only the pads which receive a clock will be modified, all others will
+       modify â€“ NOTE only the pads which receive a clock will be modified, all others will
        retain their previous state. */
     tmp = ioread32(virt_gpio_base + gppudclk_offset);
     mask = 0x1 << pin;
     tmp |= mask;
     iowrite32(tmp, virt_gpio_base + gppudclk_offset);
 
-    /* Wait 150 cycles – this provides the required hold time for the control signal */
+    /* Wait 150 cycles â€“ this provides the required hold time for the control signal */
 
     /* Write to GPPUD to remove the control signal. */
     iowrite32(PULL_NONE, virt_gpio_base + gppud_offset);
@@ -551,13 +520,15 @@ char GetGpioPinValue(char pin)
 
 static irqreturn_t h_irq_gpio23(int irq, void *data)
 {
-    if(GetGpioPinValue(GPIO_23) == 1)
+    if(GetGpioPinValue(GPIO_23) != '0')
 	{
 		automat(Event_no_obstacle);
+		printk("No obstacle");
 	}
 	else
 	{
 		automat(Event_obstacle);
+		printk("Obstacle");
 	}
 
     return IRQ_HANDLED;
@@ -671,7 +642,7 @@ void gpio_driver_exit(void)
     free_irq(irq_gpio23, h_irq_gpio23);
 	gpio_free(GPIO_23);
 
-	hrtimer_cancel(&gate_timer);
+	//hrtimer_cancel(&gate_timer);
 
 
     /* Clear GPIO pins. */
@@ -765,12 +736,12 @@ static ssize_t gpio_driver_read(struct file *filp, char *buf, size_t len, loff_t
         {
             return -EFAULT;
         }
-        else
+/*        else
         {
             (*f_pos) += data_size;
 
             return data_size;
-        }
+        }*/
     }
     else
     {
