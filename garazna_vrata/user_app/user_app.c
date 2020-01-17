@@ -18,40 +18,40 @@ int main()
     printf("Welcome to the garage door user app\n");
     printf("Please choose from one of the following options:\n");
     printf("\nO-open,\n\nS-stop,\n\nC-close\n\n");
-	
+
+    file_desc = open("/dev/garage", O_RDWR);
+
+    if(file_desc < 0)
+    {
+                printf("Error, 'garage' not opened\n");
+                return -1;
+    
+    }
+
 	while(1)
 	{
 		scanf("%c", &entry);
 		if(entry == 'o' || entry == 'c' || entry == 's' || entry == 'O' || entry == 'C' || entry == 'S')
 		{
-			file_desc = open("garage", O_RDWR);
-			if(file_desc < 0)
-   			{
-       				printf("Error, 'garage' not opened\n");
-        			return -1;
-    			}
-
 			ret_val = write(file_desc, &entry, 1);
-			close(file_desc);
 		}
 		if(entry == 'r')
 		{
-			file_desc = open("garage", O_RDWR);
-			if(file_desc < 0)
-		        {
-        			printf("Error, 'garage' not opened\n");
-        			return -1;
-    		        }
 			write(file_desc, &entry, 1);
                         read(file_desc, buffer, sizeof(buffer));
 			printf("%s", buffer);
-                        close(file_desc);
+			fflush(stdout);
+
                 }
 
 		if(entry == 'q')
 		{
 			break;
 		}
+		memset(&entry,0,sizeof(char));
+		memset(buffer,0,sizeof(buffer));
+
 	}
+    close(file_desc);
     return 0;
 }
