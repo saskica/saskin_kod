@@ -150,15 +150,25 @@ typedef enum //stanja automata
 	Stopped
 } states;
 
-typedef enum //dogadjaji koji pokrecu promenu stanja
-{
+char* state_strings[6]= {"Closed", "Closing","Opened","Opening","Blocked","Stopped"};
+
+#define STATE_STRING(state) state_strings[state]
+
+typedef enum {//dogadjaji koji pokrecu promenu stanja
     Event_close,
-	Event_open,
-	Event_stop,
-	Event_obstacle,
-	Event_timedout,
-	Event_no_obstacle
+        Event_open,
+        Event_stop,
+        Event_obstacle,
+        Event_timedout,
+        Event_no_obstacle
 } events;
+
+char* signal_strings[6]= {"Event_close","Event_open","Event_stop","Event_obstacle","Event_timedout","Event_no_obstacle"};
+#define SIGNAL_STRING(state) signal_strings[state]
+
+
+
+
 
 /*static struct hrtimer gate_timer;
 static ktime_t kt;
@@ -174,6 +184,11 @@ MODULE_PARM_DESC(timer_sec, "An integer.");
 
 void automat (events sig) //funkcija automat sa pravilima promena stanja
 {
+	printk("Automat pozvan!");
+        printk("Trenutno stanje: %s",  STATE_STRING(current_state));
+        printk("Ulazni signal: %s", SIGNAL_STRING(sig));
+
+
 	switch (current_state) //proverava trenutno stanje
 	{
 		case Closed:
@@ -271,6 +286,8 @@ void automat (events sig) //funkcija automat sa pravilima promena stanja
 				break;
 			}
 	}
+        printk("Izlazno stanje: %s", STATE_STRING(current_state));
+
 }
 
 /* Declaration of gpio_driver.c functions */
@@ -520,7 +537,7 @@ char GetGpioPinValue(char pin)
 
 static irqreturn_t h_irq_gpio23(int irq, void *data)
 {
-    if(GetGpioPinValue(GPIO_23) != '0')
+    if(GetGpioPinValue(GPIO_23) != 0)
 	{
 		automat(Event_no_obstacle);
 		printk("No obstacle");
