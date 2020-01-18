@@ -39,7 +39,7 @@ int main()
 		{
 			write(file_desc, &entry, 1);
                         read(file_desc, buffer, sizeof(buffer));
-			printf("Current state of garage door:\t");
+			printf("Garage door is currently:\t");
 			printf("%s", buffer);
 			fflush(stdout);
 
