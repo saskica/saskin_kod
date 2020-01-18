@@ -23,7 +23,7 @@ int main()
 
     if(file_desc < 0)
     {
-                printf("Error, 'garage' not opened\n");
+                printf("Error, 'garage' nod not opened\n");
                 return -1;
     
     }
