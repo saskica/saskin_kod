@@ -142,7 +142,7 @@ typedef enum {GPIO_DIRECTION_IN = 0, GPIO_DIRECTION_OUT = 1} DIRECTION;
 
 typedef enum //stanja automata
 {
-    Closed,
+        Closed,
 	Closing,
 	Opened,
 	Opening,
@@ -155,7 +155,7 @@ char* state_strings[6]= {"Closed", "Closing","Opened","Opening","Blocked","Stopp
 #define STATE_STRING(state) state_strings[state]
 
 typedef enum {//dogadjaji koji pokrecu promenu stanja
-    Event_close,
+        Event_close,
         Event_open,
         Event_stop,
         Event_obstacle,
@@ -182,14 +182,14 @@ static int timer_sec = 5;
 module_param(timer_sec, int, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
 MODULE_PARM_DESC(timer_sec, "An integer.");
 
-void automat (events sig) //funkcija automat sa pravilima promena stanja
+void automat (events sig) //function automat which dictates the changes between states
 {
-	printk("Automat pozvan!");
-        printk("Trenutno stanje: %s",  STATE_STRING(current_state));
-        printk("Ulazni signal: %s", SIGNAL_STRING(sig));
+	printk("Automat connected!");
+        printk("Current state: %s",  STATE_STRING(current_state));
+        printk("Input signal: %s", SIGNAL_STRING(sig));
 
 
-	switch (current_state) //proverava trenutno stanje
+	switch (current_state) //checks current state
 	{
 		case Closed:
 
@@ -286,7 +286,7 @@ void automat (events sig) //funkcija automat sa pravilima promena stanja
 				break;
 			}
 	}
-        printk("Izlazno stanje: %s", STATE_STRING(current_state));
+        printk("Output state: %s", STATE_STRING(current_state));
 
 }
 
