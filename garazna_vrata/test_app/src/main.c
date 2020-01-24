@@ -44,9 +44,47 @@ int main()
 	
 	
 	printf("Please, make sure there are no obstacles or movement near the sensors!\n");
+	printf("Trying to open the garage door...\n");
+	write(file_desc,open_door,1);
+	read(file_desc,tmp, BUF_LEN);
+	usleep(5000000000);
+	printf("Current state:\n");
+	printf("%s", tmp);
+	
+	printf("Please, wait to see whether the door will automatically close!\n");
+	usleep(8000000000);
+	printf("Current state:\n");
+	printf("%s", tmp);
+	
+	printf("Please, make sure there are no obstacles or movement near the sensors!\n");
+	printf("Trying to open the garage door...\n");
+	write(file_desc,open_door,1);
+	read(file_desc,tmp, BUF_LEN);
+	usleep(5000000000);
+	printf("Current state:\n");
+	printf("%s", tmp);
+
+	
+	printf("Please, make sure there are no obstacles or movement near the sensors!\n");
 	printf("Trying to close the door...\n");
 	write(file_desc,close_door,1);
 	read(file_desc,tmp, BUF_LEN);
+	printf("Current state:\n");
+	printf("%s", tmp);
+	
+	printf("Please, make sure there are no obstacles or movement near the sensors!\n");
+	printf("Trying to stop the door...\n");
+	write(file_desc,stop_door,1);
+	read(file_desc,tmp, BUF_LEN);
+	printf("Current state:\n");
+	printf("%s", tmp);
+	
+	
+	printf("Please, make sure there are no obstacles or movement near the sensors!\n");
+	printf("Trying to close the door...\n");
+	write(file_desc,close_door,1);
+	read(file_desc,tmp, BUF_LEN);
+	usleep(5000000000);
 	printf("Current state:\n");
 	printf("%s", tmp);
 	
