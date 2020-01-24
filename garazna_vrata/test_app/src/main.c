@@ -96,6 +96,7 @@ int main()
 	printf("%s", tmp);
 	
 	printf("Please, remove all obstacles, and move away from the sensors\n");
+	usleep(5000000000);
 	read(file_desc, tmp, BUF_LEN);
 	printf("Current state:\n");
 	printf("%s", tmp);
@@ -109,6 +110,7 @@ int main()
 	printf("%s", tmp);
 	
 	printf("Please, remove all obstacles, and move away from the sensors\n");
+	usleep(5000000000);
 	read(file_desc, tmp, BUF_LEN);
 	printf("Current state:\n");
 	printf("%s", tmp);
